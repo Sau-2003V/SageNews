@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f2862"/>
+      <stop offset="1" stop-color="#4b0082"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <!-- newspaper icon -->
+  <g transform="translate(260 110)" fill="none" stroke="#e1b382" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" opacity="0.9">
+    <path d="M20 10h80v100a14 14 0 0 1-14 14H14A14 14 0 0 1 0 110V40h20"/>
+    <path d="M20 10v100a14 14 0 0 1-14 14"/>
+    <path d="M100 10h20v100a14 14 0 0 1-14 14H86"/>
+    <rect x="36" y="28" width="48" height="26" rx="3"/>
+    <path d="M36 72h48M36 92h48"/>
+  </g>
+  <text x="320" y="282" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="30" font-weight="700" font-style="italic" fill="#e1b382" opacity="0.85">SageNews</text>
+</svg>
