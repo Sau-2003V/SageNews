@@ -10,5 +10,5 @@ export const CATEGORIES = [
   { slug: "science", label: "Science" },
 ];
 
-// 1 lead story + 9 cards = three full rows on desktop
+// 1 lead story + 9 cards = three full rows on desktop (10 is also NewsData.io's free-plan max)
 export const PAGE_SIZE = 10;

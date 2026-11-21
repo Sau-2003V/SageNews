@@ -35,8 +35,8 @@ const Footer = () => (
         <span>© {YEAR} {SITE_NAME}</span>
         <span>
           Powered by{" "}
-          <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-main-light">
-            NewsAPI
+          <a href="https://newsdata.io" target="_blank" rel="noopener noreferrer" className="underline hover:text-main-light">
+            NewsData.io
           </a>
         </span>
       </div>

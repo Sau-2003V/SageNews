@@ -3,34 +3,14 @@ import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
-import { PAGE_SIZE, SITE_NAME } from "../config";
+import { SITE_NAME } from "../config";
+import { fetchNews } from "../api";
 
-// const buildUrl = (category, apiKey, page) =>
-//   `https://newsapi.org/v2/top-headlines?${new URLSearchParams({
-//     category,
-//     apiKey: apiKey ?? "",
-//     pageSize: PAGE_SIZE,
-//     page,
-//   })}`; works with newsapi
-
-const buildUrl = (category, apiKey, page) =>
-  `https://newsdata.io/api/1/latest?${new URLSearchParams({
-    category,
-    apiKey: apiKey ?? "",
-    pageSize: PAGE_SIZE,
-    page,
-  })}`;
-
-async function fetchPage(category, apiKey, page) {
-  const res = await fetch(buildUrl(category, apiKey, page));
-  const data = await res.json();
-  if (!res.ok || data.status === "error") {
-    throw new Error(data.message || `Request failed (${res.status})`);
-  }
-  // NewsAPI marks deleted stories with "[Removed]"
-  const articles = (data.articles ?? []).filter((a) => a.title && a.title !== "[Removed]");
-  return { articles, totalResults: data.totalResults ?? 0 };
-}
+// Append new articles, skipping any story already on the page
+const mergeUnique = (prev, more) => {
+  const seen = new Set(prev.map((a) => a.url));
+  return prev.concat(more.filter((a) => !seen.has(a.url) && seen.add(a.url)));
+};
 
 const SkeletonGrid = () => (
   <div className="grid animate-pulse grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
@@ -51,9 +31,9 @@ const SkeletonGrid = () => (
   </div>
 );
 
-const News = ({ category, label, apiKey, setProgress }) => {
+const News = ({ category, label, setProgress }) => {
   const [articles, setArticles] = useState([]);
-  const [page, setPage] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,11 +43,12 @@ const News = ({ category, label, apiKey, setProgress }) => {
     let cancelled = false;
 
     setProgress(10);
-    fetchPage(category, apiKey, 1)
-      .then(({ articles, totalResults }) => {
+    fetchNews({ category })
+      .then(({ articles, totalResults, nextPage }) => {
         if (cancelled) return;
-        setArticles(articles);
+        setArticles(mergeUnique([], articles));
         setTotalResults(totalResults);
+        setNextPage(nextPage);
       })
       .catch((err) => !cancelled && setError(err.message))
       .finally(() => {
@@ -79,18 +60,19 @@ const News = ({ category, label, apiKey, setProgress }) => {
     return () => {
       cancelled = true;
     };
-  }, [category, label, apiKey, setProgress]);
+  }, [category, label, setProgress]);
 
   const fetchMore = async () => {
-    const next = page + 1;
     try {
-      const { articles: more } = await fetchPage(category, apiKey, next);
-      setArticles((prev) => prev.concat(more));
-      setPage(next);
-      if (more.length === 0) setTotalResults(0); // stop infinite scroll
+      const { articles: more, nextPage: token } = await fetchNews({
+        category,
+        pageToken: nextPage,
+      });
+      setArticles((prev) => mergeUnique(prev, more));
+      setNextPage(token);
     } catch (err) {
       setError(err.message);
-      setTotalResults(0);
+      setNextPage(null); // stop infinite scroll
     }
   };
 
@@ -100,7 +82,9 @@ const News = ({ category, label, apiKey, setProgress }) => {
         <h1 className="font-heading text-3xl font-bold italic text-nav-light sm:text-4xl">{label}</h1>
         <span className="h-px flex-1 bg-nav-light/30" />
         {totalResults > 0 && (
-          <span className="kicker shrink-0 text-nav-light/60">{totalResults} stories</span>
+          <span className="kicker shrink-0 text-nav-light/60">
+            {totalResults.toLocaleString()} stories
+          </span>
         )}
       </div>
 
@@ -122,7 +106,7 @@ const News = ({ category, label, apiKey, setProgress }) => {
       <InfiniteScroll
         dataLength={articles.length}
         next={fetchMore}
-        hasMore={articles.length < totalResults}
+        hasMore={Boolean(nextPage) && !error}
         loader={<Spinner />}
         style={{ overflow: "visible" }}
       >
@@ -132,9 +116,9 @@ const News = ({ category, label, apiKey, setProgress }) => {
               <NewsItem
                 title={a.title}
                 description={a.description}
-                imgUrl={a.urlToImage}
+                imgUrl={a.imageUrl}
                 url={a.url}
-                source={a.source?.name}
+                source={a.source}
                 publishedAt={a.publishedAt}
                 index={i}
                 featured={i === 0}
@@ -150,7 +134,6 @@ const News = ({ category, label, apiKey, setProgress }) => {
 News.propTypes = {
   category: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  apiKey: PropTypes.string,
   setProgress: PropTypes.func.isRequired,
 };
 

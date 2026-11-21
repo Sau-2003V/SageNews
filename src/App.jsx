@@ -6,8 +6,6 @@ import News from "./components/News";
 import Footer from "./components/Footer";
 import { CATEGORIES } from "./config";
 
-const apiKey = import.meta.env.VITE_APP_NEWS_API_KEY;
-
 const App = () => {
   const [progress, setProgress] = useState(0);
 
@@ -27,7 +25,6 @@ const App = () => {
                   key={slug}
                   category={slug}
                   label={label}
-                  apiKey={apiKey}
                   setProgress={setProgress}
                 />
               }

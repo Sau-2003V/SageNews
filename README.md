@@ -1,19 +1,49 @@
-# React + Vite
+# SageNews
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A newspaper-style headlines app built with React, Vite and Tailwind, using [NewsData.io](https://newsdata.io) for news.
 
-Currently, two official plugins are available:
+## How it fits together
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `src/` – the React app. It fetches news from **our own** `/api/news` endpoint, never from NewsData.io directly.
+- `api/news.js` – a Vercel serverless function that calls NewsData.io with the secret key and returns cleaned-up articles. Responses are cached on Vercel's CDN for 10 minutes, so many visitors share one API request.
+- `api/_newsdata.js` – the shared NewsData.io code, also used by `npm run dev` (see `vite.config.js`).
+- `vercel.json` – sends every non-`/api` URL to `index.html`, so refreshing `/technology` etc. works.
 
-## React Compiler
+## Run locally
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```bash
+npm install
+```
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+Copy `.env.example` to `.env.local` and put your NewsData.io key in it, then:
 
-## Expanding the Oxlint configuration
+```bash
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Open http://localhost:5173.
+
+## Deploy to Vercel
+
+1. Push this folder to a GitHub (or GitLab / Bitbucket) repository. `.env.local` is git-ignored, so your key is not uploaded.
+2. On [vercel.com](https://vercel.com) choose **Add New → Project** and import the repository. Vercel detects Vite automatically.
+3. Before deploying, open **Environment Variables** and add:
+   - Name: `NEWSDATA_API_KEY`
+   - Value: your NewsData.io key
+4. Click **Deploy**.
+
+To deploy from the command line instead:
+
+```bash
+npm i -g vercel
+```
+
+```bash
+vercel env add NEWSDATA_API_KEY
+```
+
+```bash
+vercel --prod
+```
+
+If you change the environment variable later, redeploy for it to take effect.

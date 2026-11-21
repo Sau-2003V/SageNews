@@ -7,19 +7,11 @@ const PLACEHOLDER = "/placeholder.svg";
 const formatDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "";
 
-// NewsAPI titles usually end in " - Source Name" (sometimes worded differently from
-// source.name, e.g. "NBC Sports" vs "NBCSports.com"); drop it since the source is shown separately
-const cleanTitle = (title) => {
-  const cut = title.lastIndexOf(" - ");
-  return cut > 0 && title.length - cut <= 40 ? title.slice(0, cut) : title;
-};
-
 const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index, featured }) => {
   const [imgFailed, setImgFailed] = useState(!imgUrl);
   const src = imgUrl
     ? `https://images.weserv.nl/?url=${encodeURIComponent(imgUrl)}&w=${featured ? 1200 : 640}`
     : null;
-  const headline = cleanTitle(title);
 
   return (
     <article
@@ -70,7 +62,7 @@ const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index,
         >
           {/* stretched link: whole card is clickable */}
           <a href={url} target="_blank" rel="noopener noreferrer" className="after:absolute after:inset-0 focus:outline-none">
-            {headline}
+            {title}
           </a>
         </h2>
 
