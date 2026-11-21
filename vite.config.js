@@ -7,7 +7,8 @@ import { getNews } from './api/_newsdata.js'
 // Serves /api/news during `npm run dev` and `npm run preview` using the same code as the
 // Vercel function, so you can work locally without the Vercel CLI.
 const newsApiDev = (apiKey) => {
-  const mount = (server) =>
+  // Must not return anything: Vite treats a returned function as a post-middleware hook
+  const mount = (server) => {
     server.middlewares.use('/api/news', async (req, res) => {
       const url = new URL(req.url, 'http://localhost')
       const { status, body } = await getNews(
@@ -18,6 +19,7 @@ const newsApiDev = (apiKey) => {
       res.setHeader('Content-Type', 'application/json')
       res.end(JSON.stringify(body))
     })
+  }
   return { name: 'news-api-dev', configureServer: mount, configurePreviewServer: mount }
 }
 

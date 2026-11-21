@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "newsapp-dev",
+      "name": "sagenews-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": ["run", "dev", "--prefix", "D:/New folder/github/SageNews"],
       "port": 5173
     }
   ]

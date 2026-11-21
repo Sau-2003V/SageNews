@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
@@ -39,7 +38,6 @@ const News = ({ category, label, setProgress }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    document.title = `${label} – ${SITE_NAME}`;
     let cancelled = false;
 
     setProgress(10);
@@ -60,7 +58,7 @@ const News = ({ category, label, setProgress }) => {
     return () => {
       cancelled = true;
     };
-  }, [category, label, setProgress]);
+  }, [category, setProgress]);
 
   const fetchMore = async () => {
     try {
@@ -78,6 +76,8 @@ const News = ({ category, label, setProgress }) => {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      {/* React 19 hoists <title> into <head> automatically */}
+      <title>{`${label} – ${SITE_NAME}`}</title>
       <div className="mb-8 flex items-center gap-4">
         <h1 className="font-heading text-3xl font-bold italic text-nav-light sm:text-4xl">{label}</h1>
         <span className="h-px flex-1 bg-nav-light/30" />
@@ -129,12 +129,6 @@ const News = ({ category, label, setProgress }) => {
       </InfiniteScroll>
     </section>
   );
-};
-
-News.propTypes = {
-  category: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  setProgress: PropTypes.func.isRequired,
 };
 
 export default News;

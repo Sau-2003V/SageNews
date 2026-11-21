@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 
 // Shown when an article has no image or its image fails to load
 const PLACEHOLDER = "/placeholder.svg";
@@ -81,17 +80,6 @@ const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index,
       <span className="pointer-events-none absolute inset-0 rounded-2xl ring-brand-light ring-offset-2 group-has-[a:focus-visible]:ring-2" />
     </article>
   );
-};
-
-NewsItem.propTypes = {
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string,
-  imgUrl: PropTypes.string,
-  url: PropTypes.string.isRequired,
-  source: PropTypes.string,
-  publishedAt: PropTypes.string,
-  index: PropTypes.number,
-  featured: PropTypes.bool,
 };
 
 export default NewsItem;
