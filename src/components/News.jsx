@@ -5,8 +5,16 @@ import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import { PAGE_SIZE, SITE_NAME } from "../config";
 
+// const buildUrl = (category, apiKey, page) =>
+//   `https://newsapi.org/v2/top-headlines?${new URLSearchParams({
+//     category,
+//     apiKey: apiKey ?? "",
+//     pageSize: PAGE_SIZE,
+//     page,
+//   })}`; works with newsapi
+
 const buildUrl = (category, apiKey, page) =>
-  `https://newsapi.org/v2/top-headlines?${new URLSearchParams({
+  `https://newsdata.io/api/1/latest?${new URLSearchParams({
     category,
     apiKey: apiKey ?? "",
     pageSize: PAGE_SIZE,
