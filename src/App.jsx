@@ -11,7 +11,8 @@ const App = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <LoadingBar color="#4B0082" progress={progress} height={3} shadow={false} />
+      {/* colour comes from --color-loading in index.css, so it follows light/dark mode */}
+      <LoadingBar color="var(--color-loading)" progress={progress} height={3} shadow={false} />
       <Nav />
       <main className="flex-1">
         <Routes>

@@ -1,27 +1,63 @@
 @import "tailwindcss";
 
+/* `dark:` classes apply when the theme button sets <html data-theme="dark"> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --font-heading: "Fraunces", Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* Original palette */
   --color-brand: #4b0082;
-  --color-brand-light: #7a2fc0;
-  --color-main-light: #e1b382;
+  --color-brand-light: #828273;
+  --color-main-light: #E7FF9E;
   --color-nav-light: #0f2862;
   --color-card-light: #ececf1;
 
   /* Tints of the same palette */
   --color-paper: #f6ebdd;
   --color-sand: #c9965f;
+
+  /* News card background (same as paper in light mode, changed in dark mode below) */
+  --color-card: var(--color-paper);
+  /* Text on the news cards: headline/description/date, and the source + "Read story" accent */
+  --color-card-text: var(--color-nav-light);
+  --color-card-accent: var(--color-brand);
+
+  /* Top loading bar */
+  --color-loading: #4b0082;
+
+  /* Shadows follow the navbar / brand colours, so they change with the theme */
+  --shadow-bar: 0 6px 20px -8px color-mix(in srgb, var(--color-nav-light) 60%, transparent);
+  --shadow-card:
+    0 1px 0 color-mix(in srgb, var(--color-nav-light) 8%, transparent),
+    0 12px 28px -14px color-mix(in srgb, var(--color-nav-light) 45%, transparent);
+  --shadow-card-hover:
+    0 1px 0 color-mix(in srgb, var(--color-nav-light) 8%, transparent),
+    0 22px 40px -16px color-mix(in srgb, var(--color-brand) 50%, transparent);
+}
+
+/* ---------- Dark mode ----------
+   Switched on by <html data-theme="dark"> (see ThemeToggle.jsx and index.html).
+   Only list the colours that change; everything else keeps its light value. */
+:root[data-theme="dark"] {
+  --color-page:  #5E8263; /* page background */
+  --color-nav-light: #332333; /* navbar, footer and everything else in the navbar colour */
+  --color-loading: #ff1a1a; /* bright red loading bar */
+  --color-card: #0f2862; /* news card background */
+  --color-card-text: #fffaf2; /* bright cream text on the cards */
+  --color-card-accent: #e7ff9e; /* lime source name and "Read story" */
 }
 
 @layer base {
   body {
-    @apply bg-main-light font-sans text-nav-light antialiased;
+    @apply font-sans text-nav-light antialiased;
+    /* --color-page only exists in dark mode; light mode uses main-light */
+    background-color: var(--color-page, var(--color-main-light));
+    @apply dark:text-paper;
     /* soft paper grain */
     background-image:
-      radial-gradient(rgb(15 40 98 / 0.06) 1px, transparent 1px),
+      radial-gradient(color-mix(in srgb, var(--color-nav-light) 6%, transparent) 1px, transparent 1px),
       radial-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1px);
     background-size: 22px 22px, 22px 22px;
     background-position: 0 0, 11px 11px;

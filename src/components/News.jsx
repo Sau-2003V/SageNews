@@ -12,14 +12,14 @@ const mergeUnique = (prev, more) => {
 };
 
 const SkeletonGrid = () => (
-  <div className="grid animate-pulse grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+  <div className="grid animate-pulse grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3" aria-hidden="true">
     {Array.from({ length: 4 }, (_, i) => (
       <div
         key={i}
-        className={`overflow-hidden rounded-2xl bg-paper/70 ${i === 0 ? "sm:col-span-2 lg:col-span-3 md:grid md:grid-cols-5" : ""}`}
+        className={`overflow-hidden rounded-2xl bg-card/70 ${i === 0 ? "col-span-2 lg:col-span-3 md:grid md:grid-cols-5" : ""}`}
       >
         <div className={`bg-nav-light/15 ${i === 0 ? "aspect-video md:col-span-3 md:aspect-auto md:h-80" : "aspect-16/10"}`} />
-        <div className="space-y-3 p-5 md:col-span-2">
+        <div className="space-y-3 p-3 sm:p-5 md:col-span-2">
           <div className="h-3 w-1/3 rounded bg-brand/15" />
           <div className="h-5 w-full rounded bg-nav-light/15" />
           <div className="h-5 w-4/5 rounded bg-nav-light/15" />
@@ -76,13 +76,12 @@ const News = ({ category, label, setProgress }) => {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-      {/* React 19 hoists <title> into <head> automatically */}
       <title>{`${label} – ${SITE_NAME}`}</title>
       <div className="mb-8 flex items-center gap-4">
-        <h1 className="font-heading text-3xl font-bold italic text-nav-light sm:text-4xl">{label}</h1>
-        <span className="h-px flex-1 bg-nav-light/30" />
+        <h1 className="font-heading text-3xl font-bold italic text-nav-light sm:text-4xl dark:text-paper">{label}</h1>
+        <span className="h-px flex-1 bg-nav-light/30 dark:bg-paper/30" />
         {totalResults > 0 && (
-          <span className="kicker shrink-0 text-nav-light/60">
+          <span className="kicker shrink-0 text-nav-light/60 dark:text-paper/90">
             {totalResults.toLocaleString()} stories
           </span>
         )}
@@ -98,7 +97,7 @@ const News = ({ category, label, setProgress }) => {
       )}
 
       {!loading && !error && articles.length === 0 && (
-        <p className="text-center font-heading text-xl italic text-nav-light/70">
+        <p className="text-center font-heading text-xl italic text-nav-light/70 dark:text-paper/85">
           No stories on the wire right now.
         </p>
       )}
@@ -110,9 +109,10 @@ const News = ({ category, label, setProgress }) => {
         loader={<Spinner />}
         style={{ overflow: "visible" }}
       >
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* phones: 2 compact cards per row · tablets: 2 · desktop: 3. The lead story spans the full row. */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
           {articles.map((a, i) => (
-            <div key={a.url} className={i === 0 ? "sm:col-span-2 lg:col-span-3" : ""}>
+            <div key={a.url} className={i === 0 ? "col-span-2 lg:col-span-3" : ""}>
               <NewsItem
                 title={a.title}
                 description={a.description}
