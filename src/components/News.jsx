@@ -110,7 +110,8 @@ const News = ({ category, label, setProgress }) => {
         style={{ overflow: "visible" }}
       >
         {/* phones: 2 compact cards per row · tablets: 2 · desktop: 3. The lead story spans the full row. */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+        {/* items-start: an expanded card grows on its own instead of stretching the others in its row */}
+        <div className="grid grid-cols-2 items-start gap-3 sm:gap-6 lg:grid-cols-3">
           {articles.map((a, i) => (
             <div key={a.url} className={i === 0 ? "col-span-2 lg:col-span-3" : ""}>
               <NewsItem

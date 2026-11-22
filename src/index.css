@@ -8,14 +8,15 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* Original palette */
-  --color-brand: #4b0082;
-  --color-brand-light: #828273;
+  --color-brand: #2f4858;
+  --color-brand-light: #757F64;
   --color-main-light: #E7FF9E;
   --color-nav-light: #0f2862;
   --color-card-light: #ececf1;
+  --color-nav-highlight: #ffefca;
 
   /* Tints of the same palette */
-  --color-paper: #f6ebdd;
+  --color-paper: #dfe0df;
   --color-sand: #c9965f;
 
   /* News card background (same as paper in light mode, changed in dark mode below) */
@@ -35,18 +36,28 @@
   --shadow-card-hover:
     0 1px 0 color-mix(in srgb, var(--color-nav-light) 8%, transparent),
     0 22px 40px -16px color-mix(in srgb, var(--color-brand) 50%, transparent);
+
+  /* Card preview: extra description text fades and slides in when a card is expanded */
+  --animate-preview-in: preview-in 300ms ease-out;
+  @keyframes preview-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
-/* ---------- Dark mode ----------
-   Switched on by <html data-theme="dark"> (see ThemeToggle.jsx and index.html).
-   Only list the colours that change; everything else keeps its light value. */
+/* dark mode colors */
 :root[data-theme="dark"] {
   --color-page:  #5E8263; /* page background */
   --color-nav-light: #332333; /* navbar, footer and everything else in the navbar colour */
   --color-loading: #ff1a1a; /* bright red loading bar */
-  --color-card: #0f2862; /* news card background */
-  --color-card-text: #fffaf2; /* bright cream text on the cards */
-  --color-card-accent: #e7ff9e; /* lime source name and "Read story" */
+  --color-card: #2f4858; /* news card background */
+  --color-card-text: #ffebcc; /* text on the cards (headline 90%, description 75%, date 70% – see NewsItem.jsx) */
 }
 
 @layer base {
@@ -99,7 +110,6 @@
   );
 }
 
-/* While switching, stop the cards' own colour transitions so the new theme is captured fully settled */
 .theme-switching *,
 .theme-switching *::before,
 .theme-switching *::after {

@@ -12,7 +12,7 @@ const today = new Date().toLocaleDateString(undefined, {
 const linkClass = ({ isActive }) =>
   `relative block whitespace-nowrap px-3 py-3 text-sm font-medium transition-colors sm:px-4 ${
     isActive
-      ? "text-main-light after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t after:bg-main-light sm:after:inset-x-4"
+      ? "text-nav-highlight after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t after:bg-nav-highlight dark:after:bg-main-light sm:after:inset-x-4"
       : "text-paper/70 hover:text-paper"
   }`;
 
