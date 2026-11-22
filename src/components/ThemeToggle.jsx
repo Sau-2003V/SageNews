@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { flushSync } from "react-dom";
 
 const STORAGE_KEY = "sagenews-theme";
+// Ripple timing and the width of the band of rings at the front of the wave (see index.css)
+const RIPPLE_MS = 1100;
+const RIPPLE_BAND_PX = 220;
 
 // index.html sets data-theme before React loads, so read the starting value from there
 const currentTheme = () =>
@@ -10,15 +14,58 @@ const ThemeToggle = () => {
   const [theme, setTheme] = useState(currentTheme);
   const isDark = theme === "dark";
 
-  const toggle = () => {
-    const next = isDark ? "light" : "dark";
+  const applyTheme = (next) => {
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
       // storage blocked (private mode etc.) – the switch still works for this visit
     }
-    setTheme(next);
+    // flushSync so the sun/moon icon is already swapped in the new snapshot
+    flushSync(() => setTheme(next));
+  };
+
+  const toggle = (event) => {
+    const next = isDark ? "light" : "dark";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Browsers without View Transitions (or users who prefer less motion) just switch instantly
+    if (!document.startViewTransition || reduceMotion) {
+      applyTheme(next);
+      return;
+    }
+
+    // Ripple rings spread from the centre of the button. The wave travels past the farthest
+    // corner of the screen by the width of the ring band, so the page ends fully switched.
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+    const root = document.documentElement;
+    root.style.setProperty("--ripple-x", `${x}px`);
+    root.style.setProperty("--ripple-y", `${y}px`);
+    root.classList.add("theme-switching");
+    const transition = document.startViewTransition(() => applyTheme(next));
+
+    transition.ready
+      .then(() => {
+        root.animate(
+          { "--ripple-r": ["0px", `${radius + RIPPLE_BAND_PX}px`] },
+          // fast start, slow finish – like a ripple losing energy as it spreads.
+          // fill: "forwards" holds the fully-revealed state until the browser swaps back to the
+          // live page; without it the ripple snaps back to 0 for one frame and the old theme blinks.
+          {
+            duration: RIPPLE_MS,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "forwards",
+            pseudoElement: "::view-transition-new(root)",
+          },
+        );
+      })
+      // The browser can skip the animation (e.g. tab in the background); the theme still switches
+      .catch(() => {});
+    transition.finished.finally(() => document.documentElement.classList.remove("theme-switching"));
   };
 
   return (

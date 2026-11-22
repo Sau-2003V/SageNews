@@ -68,6 +68,44 @@
   }
 }
 
+/* ---------- Light/dark switch animation: ripple ----------
+   ThemeToggle.jsx sets --ripple-x / --ripple-y (the button's centre) and animates --ripple-r
+   (how far the wave has travelled) using the View Transitions API.
+   The new theme shows through a mask: solid behind the wave, then three soft rings at its front. */
+@property --ripple-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none; /* turn off the browser's default cross-fade */
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  --ring: calc(var(--ripple-r) - 220px); /* start of the ring band – keep in sync with RIPPLE_BAND_PX */
+  mask-image: radial-gradient(
+    circle at var(--ripple-x) var(--ripple-y),
+    #000 var(--ring),
+    transparent calc(var(--ring) + 40px),
+    #000 calc(var(--ring) + 85px),
+    transparent calc(var(--ring) + 120px),
+    #000 calc(var(--ring) + 155px),
+    transparent calc(var(--ring) + 180px),
+    #000 calc(var(--ring) + 200px),
+    transparent var(--ripple-r)
+  );
+}
+
+/* While switching, stop the cards' own colour transitions so the new theme is captured fully settled */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
 @layer components {
   .btn-primary {
     @apply rounded-full bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-light focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-light focus-visible:ring-offset-2;
