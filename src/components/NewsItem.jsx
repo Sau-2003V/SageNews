@@ -1,4 +1,6 @@
 import { useId, useState } from "react";
+import { ShineBorder } from "@/components/ui/shine-border";
+import { MagicCard } from "@/components/ui/magic-card";
 
 // Shown when an article has no image or its image fails to load
 const PLACEHOLDER = "/placeholder.svg";
@@ -22,10 +24,13 @@ const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index,
     ? `https://images.weserv.nl/?url=${encodeURIComponent(imgUrl)}&w=${featured ? 1200 : 640}`
     : null;
 
-  return (
+  const card = (
     <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-xl bg-card sm:rounded-2xl shadow-card ring-1 ring-nav-light/10 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover ${
-        featured ? "md:grid md:grid-cols-5" : ""
+      className={`group relative flex h-full flex-col overflow-hidden rounded-xl sm:rounded-2xl ${
+        featured
+          ? // the lead story is styled here; the other cards get their background/shadow from MagicCard below
+            "bg-card shadow-card ring-1 ring-nav-light/10 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover md:grid md:grid-cols-5"
+          : ""
       }`}
     >
       <div
@@ -113,8 +118,6 @@ const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index,
         {/* no description: keep the same 3-line space on sm+ so the card matches its neighbours */}
         {!description && !featured && <div className="hidden min-h-[4.875em] text-sm sm:block" aria-hidden="true" />}
 
-        {/* The only link to the article. z-10 keeps it above the card-wide expand button.
-            Accent colour in light mode, same colour as the card text in dark mode. */}
         <a
           href={url}
           target="_blank"
@@ -127,7 +130,6 @@ const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index,
         </a>
       </div>
 
-      {/* Invisible button covering the whole card: click/tap anywhere (except "Read story") to expand or collapse */}
       <button
         type="button"
         onClick={() => setExpanded((open) => !open)}
@@ -141,8 +143,36 @@ const NewsItem = ({ title, description, imgUrl, url, source, publishedAt, index,
       </button>
 
       {/* keyboard focus ring */}
-      <span className="pointer-events-none absolute inset-0 rounded-xl ring-brand-light ring-offset-2 group-has-[:focus-visible]:ring-2 sm:rounded-2xl" />
+      <span className="pointer-events-none absolute inset-0 rounded-xl ring-brand-light ring-offset-2 group-has-focus-visible:ring-2 sm:rounded-2xl" />
+
+      {/* Magic UI shine border – lead story only. Colours are palette variables from index.css,
+          so changing those (or overriding them in the dark-mode block) changes the shine too. */}
+      {featured && (
+        <ShineBorder
+          borderWidth={2}
+          duration={15}
+          shineColor={["var(--color-main-light)", "var(--color-brand)", "var(--color-sand)"]}
+        />
+      )}
     </article>
+  );
+
+  // Lead story: plain card (it has the shine border instead)
+  if (featured) return card;
+
+  return (
+    <MagicCard
+      // MagicCard fills itself with the shadcn "background" colour (bg-background + var(--color-background));
+      // point both at the news card colour so the card keeps its own background
+      className="rounded-xl shadow-card transition duration-300 [--background:var(--color-card)] [--color-background:var(--color-card)] hover:-translate-y-1 hover:shadow-card-hover sm:rounded-2xl"
+      gradientSize={300}
+      gradientColor="var(--color-card-text)" // soft spotlight in the card text colour (navy light / cream dark)
+      gradientOpacity={0.12}
+      gradientFrom="var(--color-main-light)" // edge glow
+      gradientTo="var(--color-sand)"
+    >
+      {card}
+    </MagicCard>
   );
 };
 

@@ -1,5 +1,6 @@
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import { getNews } from './api/_newsdata.js'
@@ -35,5 +36,11 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       newsApiDev(env.NEWSDATA_API_KEY),
     ],
+    // "@/…" means "src/…" – used by shadcn / Magic UI components (also set in jsconfig.json)
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
   }
 })
